@@ -22,7 +22,7 @@ class FoodService {
             stockAsc: ['stock', 'ASC'],
             stockDesc: ['stock', 'DESC'],
         };
-        
+
         const order = sortOptions[sort] ? sortOptions[sort] : sortOptions.idAsc;
 
         try {
@@ -47,6 +47,11 @@ class FoodService {
     static async getFood(id) {
         try {
             const food = await Food.findByPk(id);
+            if (!food) {
+                const error = new Error('Food not found');
+                error.status = 404;
+                throw error;
+            }
             return food;
         } catch (error) {
             console.log('Error getting Food: ', error);
@@ -67,14 +72,16 @@ class FoodService {
     static async updateFood(id, food_name, food_price, stock) {
         try {
             const food = await Food.findByPk(id);
-            if (food) {
-                if (food_name !== undefined && food_name !== '') food.food_name = food_name;
-                if (food_price !== undefined && food_price !== '') food.food_price = food_price;
-                if (stock !== undefined && stock !== '') food.stock = stock;
-                await food.save();
-                return food;
+            if (!food) {
+                const error = new Error('Food not found');
+                error.status = 404;
+                throw error;
             }
-            return null;
+            if (food_name !== undefined && food_name !== '') food.food_name = food_name;
+            if (food_price !== undefined && food_price !== '') food.food_price = food_price;
+            if (stock !== undefined && stock !== '') food.stock = stock;
+            await food.save();
+            return food;
         } catch (error) {
             console.log('Error updating Food: ', error);
             throw error;
@@ -84,11 +91,12 @@ class FoodService {
     static async deleteFood(id) {
         try {
             const food = await Food.findByPk(id);
-            if (food) {
-                await food.destroy();
-                return food;
+            if (!food) {
+                const error = new Error('Food not found');
+                error.status = 404;
+                throw error;
             }
-            return null;
+            return await food.destroy();
         } catch (error) {
             console.log('Error deleting Food: ', error);
             throw error;

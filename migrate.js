@@ -1,6 +1,5 @@
 const sequelize = require('./app/config/database');
-const Customer = require('./app/models/customer');
-const Food = require('./app/models/food');
+const { Customer, Food, Transaction } = require('./app/models/association');
 
 const migrate = async () => {
     try {

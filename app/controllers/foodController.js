@@ -41,12 +41,11 @@ class FoodController {
         const { id } = req.params;
         try {
             const food = await FoodService.getFood(id);
-            if (!food) {
-                return res.status(404).json({ error: 'Food not found' });
-            } else {
-                return res.json(food);
-            }
+            return res.json(food);
         } catch (error) {
+            if (error.status) {
+                return res.status(error.status).json({ error: error.message });
+            }
             res.status(500).json({ error: error.message });
         }
     }
@@ -68,12 +67,11 @@ class FoodController {
 
         try {
             const food = await FoodService.updateFood(id, food_name, food_price, stock);
-            if (!food) {
-                return res.status(404).json({ error: 'Food not found' });
-            } else {
-                return res.status(200).json({ message: `Food ${id} has been updated successfully`, food });
-            }
+            return res.status(200).json({ message: `Food ${id} has been updated successfully`, food });
         } catch (error) {
+            if (error.status) {
+                return res.status(error.status).json({ error: error.message });
+            }
             res.status(500).json({ error: error.message });
         }
     }
@@ -81,13 +79,12 @@ class FoodController {
     static async deleteFood(req, res) {
         const { id } = req.params;
         try {
-            const food = await FoodService.deleteFood(id);
-            if (!food) {
-                return res.status(404).json({ error: 'Food not found' });
-            } else {
-                return res.status(200).json({ message: 'Food ' + id + ' has been deleted successfully' });
-            }
+            await FoodService.deleteFood(id);
+            return res.status(404).json({ error: 'Food not found' });
         } catch (error) {
+            if (error.status) {
+                return res.status(error.status).json({ error: error.message });
+            }
             res.status(500).json({ error: error.message });
         }
     }

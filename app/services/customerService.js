@@ -13,8 +13,8 @@ class CustomerService {
         console.log('Where Clause:', where); // Log the where clause to debug
 
         const sortOptions = {
-            idAsc: ['id', 'ASC'],
-            idDesc: ['id', 'DESC'],
+            idAsc: ['customer_id', 'ASC'],
+            idDesc: ['customer_id', 'DESC'],
             nameAsc: ['name', 'ASC'],
             nameDesc: ['name', 'DESC'],
             addressAsc: ['address', 'ASC'],
@@ -22,7 +22,7 @@ class CustomerService {
             phoneAsc: ['phone', 'ASC'],
             phoneDesc: ['phone', 'DESC'],
         };
-        
+
         const order = sortOptions[sort] ? sortOptions[sort] : sortOptions.idAsc;
 
         try {
@@ -47,6 +47,11 @@ class CustomerService {
     static async getCustomer(id) {
         try {
             const customer = await Customer.findByPk(id);
+            if (!customer) {
+                const error = new Error('Customer not found');
+                error.status = 404;
+                throw error;
+            }
             return customer;
         } catch (error) {
             console.log('Error getting Customer: ', error);
@@ -67,14 +72,16 @@ class CustomerService {
     static async updateCustomer(id, name, address, phone) {
         try {
             const customer = await Customer.findByPk(id);
-            if (customer) {
-                if (name !== undefined && name !== '') customer.name = name;
-                if (address !== undefined && address !== '') customer.address = address;
-                if (phone !== undefined && phone !== '') customer.phone = phone;
-                await customer.save();
-                return customer;
+            if (!customer) {
+                const error = new Error('Customer not found');
+                error.status = 404;
+                throw error;
             }
-            return null;
+            if (name !== undefined && name !== '') customer.name = name;
+            if (address !== undefined && address !== '') customer.address = address;
+            if (phone !== undefined && phone !== '') customer.phone = phone;
+            await customer.save();
+            return customer;
         } catch (error) {
             console.log('Error updating Customer: ', error);
             throw error;
@@ -84,11 +91,12 @@ class CustomerService {
     static async deleteCustomer(id) {
         try {
             const customer = await Customer.findByPk(id);
-            if (customer) {
-                await customer.destroy();
-                return customer;
+            if (!customer) {
+                const error = new Error('Customer not found');
+                error.status = 404;
+                throw error;
             }
-            return null;
+            return await customer.destroy();
         } catch (error) {
             console.log('Error deleting Customer: ', error);
             throw error;
