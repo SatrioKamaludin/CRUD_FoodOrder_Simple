@@ -22,7 +22,7 @@ class CustomerService {
             phoneAsc: ['phone', 'ASC'],
             phoneDesc: ['phone', 'DESC'],
         };
-
+        
         const order = sortOptions[sort] ? sortOptions[sort] : sortOptions.idAsc;
 
         try {
