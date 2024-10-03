@@ -1,11 +1,20 @@
 const Customer = require('../models/customer');
+const { Op } = require('sequelize');
 
 class CustomerService {
-    static async getCustomers(page = 1, itemsPerPage = 10, search = '', sort = 'nameAsc') {
+    static async getCustomers(page = 1, itemsPerPage = 10, search = '', sort = 'idAsc') {
         const offset = (page - 1) * itemsPerPage;
-        const where = search ? { name: { [Op.like]: `%${search}%` } } : {};
+
+        const searchTerm = search || '';
+
+        const where = searchTerm ? { name: { [Op.iLike]: `%${search}%` } } : {};
+
+        console.log('Search Term:', searchTerm); // Log the search term to verify
+        console.log('Where Clause:', where); // Log the where clause to debug
 
         const sortOptions = {
+            idAsc: ['id', 'ASC'],
+            idDesc: ['id', 'DESC'],
             nameAsc: ['name', 'ASC'],
             nameDesc: ['name', 'DESC'],
             addressAsc: ['address', 'ASC'],
@@ -14,7 +23,7 @@ class CustomerService {
             phoneDesc: ['phone', 'DESC'],
         };
         
-        const order = sortOptions[sort] || sortOptions.nameAsc;
+        const order = sortOptions[sort] ? sortOptions[sort] : sortOptions.idAsc;
 
         try {
             const customers = await Customer.findAndCountAll({

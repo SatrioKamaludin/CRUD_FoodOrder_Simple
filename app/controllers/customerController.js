@@ -18,7 +18,7 @@ class CustomerController {
     }
 
     static async getCustomers(req, res) {
-        const { page = 1, itemsPerPage = 10, search = '', sort = 'nameAsc' } = req.query;
+        const { page = 1, itemsPerPage = 10, search = '', sort = 'idAsc' } = req.query;
         try {
             const customers = await CustomerService.getCustomers(page, itemsPerPage, search, sort);
             return res.json(customers);
