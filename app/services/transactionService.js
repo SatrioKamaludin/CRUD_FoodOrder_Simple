@@ -61,6 +61,10 @@ class TransactionService {
         const sortOptions = {
             idAsc: ['transaction_id', 'ASC'],
             idDesc: ['transaction_id', 'DESC'],
+            priceAsc: ['total_price', 'ASC'],
+            priceDesc: ['total_price', 'DESC'],
+            qtyAsc: ['qty', 'ASC'],
+            qtyDesc: ['qty', 'DESC'],
         };
 
         const order = sortOptions[sort] ? sortOptions[sort] : sortOptions.idAsc;
